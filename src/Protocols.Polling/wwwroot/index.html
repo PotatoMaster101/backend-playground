@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Polling</title>
+</head>
+<body>
+<label for="jobId" style="display:block; margin-bottom:5px;">Job ID</label>
+<input id="jobId" placeholder="Job ID" style="display:block; margin-bottom:15px;" />
+<button onclick="checkJob()" style="margin-bottom:20px;">Check Job (Poll)</button>
+<button onclick="createJob()" style="margin-bottom:20px;">Create Job</button>
+
+<label for="logs" style="display:block; margin-bottom:5px;">Logs</label>
+<ul id="logs"></ul>
+
+<script>
+  function addLog(message) {
+    const log = document.createElement("li");
+    log.textContent = message;
+    document.getElementById("logs").appendChild(log);
+  }
+
+  async function checkJob() {
+    const jobId = document.getElementById("jobId").value;
+    if (!jobId) {
+      alert("Missing Job ID");
+      return;
+    }
+
+    const response = await fetch(`/job?id=${jobId}`, { method: "GET" });
+    const completed = await response.text();
+    addLog(`Job Status: ${completed}`);
+  }
+
+  async function createJob() {
+    const response = await fetch("/job", { method: "POST" });
+    const jobId = await response.text();
+    addLog(`Job Created: ${jobId}`);
+  }
+</script>
+</body>
+</html>

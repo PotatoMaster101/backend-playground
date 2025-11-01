@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Server Sent Events</title>
+</head>
+<body>
+<button onclick="startStream()" style="margin-bottom:20px;">Start SSE</button>
+<label for="logs" style="display:block; margin-bottom:5px;">Logs</label>
+<ul id="logs"></ul>
+
+<script>
+  function addLog(message) {
+    const log = document.createElement("li");
+    log.textContent = message;
+    document.getElementById("logs").appendChild(log);
+  }
+
+  function startStream() {
+    const eventSource = new EventSource("/sse");
+    eventSource.onmessage = function (event) {
+      addLog(`Received: ${event.data}`);
+    };
+  }
+</script>
+</body>
+</html>

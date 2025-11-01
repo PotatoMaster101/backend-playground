@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Push Protocol</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
+</head>
+<body>
+<label for="username" style="display:block; margin-bottom:5px;">Username</label>
+<input id="username" placeholder="Username" style="display:block; margin-bottom:15px;" />
+
+<label for="message" style="display:block; margin-bottom:5px;">Message</label>
+<input id="message" placeholder="Message" style="display:block; margin-bottom:15px;" />
+
+<button onclick="sendMessage()" style="margin-bottom:20px;">Send Message</button>
+<label for="messages" style="display:block; margin-bottom:5px;">Messages</label>
+<ul id="messages"></ul>
+
+<script>
+  async function sendMessage() {
+    const username = document.getElementById("username");
+    const message = document.getElementById("message");
+
+    if (!username.value || !message.value) {
+      alert("Missing username or message");
+    } else {
+      await connection.invoke("SendMessage", username.value, message.value);
+      username.value = "";
+      message.value = "";
+    }
+  }
+
+  const connection = new signalR.HubConnectionBuilder()
+  .withUrl("/chat")
+  .configureLogging(signalR.LogLevel.Information)
+  .build();
+
+  connection.on("ReceiveMessage", (username, message) => {
+    const item = document.createElement("li");
+    item.textContent = `${username} said: ${message}`;
+    document.getElementById("messages").appendChild(item);
+  });
+
+  connection.start().catch(err => console.error(err));
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Publish Subscribe</title>
+</head>
+<body>
+<label for="message" style="display:block; margin-bottom:5px;">Message</label>
+<input id="message" placeholder="Message" style="display:block; margin-bottom:15px;" />
+
+<button onclick="publish()" style="display:block; margin-bottom:20px;">Publish</button>
+<button onclick="consume()" style="display:block; margin-bottom:20px;">Consume</button>
+<label for="logs" style="display:block; margin-bottom:5px;">Logs</label>
+<ul id="logs"></ul>
+
+<script>
+  function addLog(message) {
+    const log = document.createElement("li");
+    log.textContent = message;
+    document.getElementById("logs").appendChild(log);
+  }
+
+  async function publish() {
+    const message = document.getElementById("message").value;
+    if (!message) {
+      alert("Empty message");
+      return;
+    }
+
+    await fetch("/publish", {
+      body: JSON.stringify({ message: message }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    addLog(`Published: ${message}`);
+  }
+
+  async function consume() {
+    const response = await fetch("/consume");
+    addLog(await response.text());
+  }
+</script>
+</body>
+</html>
